@@ -94,3 +94,35 @@ class MetaTags:
     twitter_card: str
     twitter_title: str
     twitter_description: str
+    robots: str
+    viewport: str
+    charset: str
+    locale: str
+    extra: list[tuple[str, str]] = field(default_factory=list)
+
+
+@dataclass
+class SerpSnippet:
+    title: str
+    url: str
+    display_url: str
+    description: str
+    breadcrumb: str
+    score_bps: int
+
+
+@dataclass
+class PageScore:
+    total_bps: int
+    title_score_bps: int
+    desc_score_bps: int
+    h1_score_bps: int
+    keyword_score_bps: int
+    length_score_bps: int
+    grade: ContentGrade
+    suggestions: list[str]
+
+
+@dataclass
+class SitemapUrl:
+    loc: str
