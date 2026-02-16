@@ -126,3 +126,35 @@ class PageScore:
 @dataclass
 class SitemapUrl:
     loc: str
+    lastmod: str | None
+    changefreq: str | None
+    priority: float | None
+
+
+# ------------------------------------------------------------------------------
+# Text normalization and hashing (for claim ids / keyword hashes)
+# ------------------------------------------------------------------------------
+
+def jeffa_normalize_keyword(raw: str) -> str:
+    s = raw.strip().lower()
+    s = unicodedata.normalize("NFKC", s)
+    s = re.sub(r"\s+", " ", s)
+    return s.strip()
+
+
+def jeffa_keyword_hash(keyword: str) -> str:
+    norm = jeffa_normalize_keyword(keyword)
+    payload = f"{JEFFA_NAMESPACE}:{norm}"
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def jeffa_claim_id(agent_id: str, keyword: str, nonce: str) -> str:
+    norm_kw = jeffa_normalize_keyword(keyword)
+    payload = f"{JEFFA_ANCHOR_SEED}:{agent_id}:{norm_kw}:{nonce}"
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def jeffa_agent_id(wallet_or_name: str) -> str:
+    return hashlib.sha256(f"{JEFFA_NAMESPACE}:agent:{wallet_or_name}".encode("utf-8")).hexdigest()
+
+
