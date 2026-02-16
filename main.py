@@ -158,3 +158,35 @@ def jeffa_agent_id(wallet_or_name: str) -> str:
     return hashlib.sha256(f"{JEFFA_NAMESPACE}:agent:{wallet_or_name}".encode("utf-8")).hexdigest()
 
 
+# ------------------------------------------------------------------------------
+# Keyword extraction and density
+# ------------------------------------------------------------------------------
+
+def jeffa_tokenize(text: str) -> list[str]:
+    text = unicodedata.normalize("NFKC", text)
+    text = re.sub(r"[^\w\s]", " ", text)
+    return [t.lower() for t in text.split() if t]
+
+
+def jeffa_extract_keywords(text: str, min_len: int = 2, stop_words: frozenset[str] | None = None) -> list[str]:
+    stop = stop_words or JEFFA_STOP_WORDS_EN
+    tokens = jeffa_tokenize(text)
+    return [t for t in tokens if len(t) >= min_len and t not in stop]
+
+
+def jeffa_keyword_density_bps(text: str, keyword: str) -> int:
+    tokens = jeffa_tokenize(text)
+    if not tokens:
+        return 0
+    kw_norm = jeffa_normalize_keyword(keyword)
+    kw_tokens = jeffa_tokenize(kw_norm)
+    if not kw_tokens:
+        return 0
+    count = 0
+    for i in range(len(tokens) - len(kw_tokens) + 1):
+        if tokens[i:i + len(kw_tokens)] == kw_tokens:
+            count += 1
+    return (count * 10000) // len(tokens) if tokens else 0
+
+
+def jeffa_analyze_keyword_in_text(text: str, keyword: str) -> KeywordResult:
