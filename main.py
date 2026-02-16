@@ -62,3 +62,35 @@ class SerpTier(Enum):
 
 class ContentGrade(Enum):
     A = 90
+    B = 75
+    C = 60
+    D = 40
+    F = 0
+
+
+# ------------------------------------------------------------------------------
+# Data structures
+# ------------------------------------------------------------------------------
+
+@dataclass
+class KeywordResult:
+    keyword: str
+    count: int
+    density_bps: int
+    position_first: int
+    position_last: int
+    tier: SerpTier
+    normalized: str
+
+
+@dataclass
+class MetaTags:
+    title: str
+    description: str
+    canonical: str
+    og_title: str
+    og_description: str
+    og_type: str
+    twitter_card: str
+    twitter_title: str
+    twitter_description: str
